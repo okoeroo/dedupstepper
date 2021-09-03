@@ -34,31 +34,42 @@ def argparsing(exec_file):
     return args
 
 
-def file_hash(filepath):
-    with open(filepath, "rb") as f:
-        bytes = f.read() # read entire file as bytes
-        readable_hash = hashlib.sha256(bytes).hexdigest();
-        print(readable_hash)
-        return readable_hash
+class FileObj:
+    def __init__(self, filepath):
+        if filepath is None or filepath == "":
+            raise "Error"
 
-def file_handling(filepath):
-    statinfo = os.stat(filepath)
+        self.filepath = filepath
+        self.obj = {}
 
-    obj = {}
+        self.update()
+        self.hash()
 
-    obj['filepath'] = filepath
-    obj['statinfo'] = statinfo
 
-    obj['isfile']   = os.path.isfile(filepath)
-    obj['isdir']    = os.path.isdir(filepath)
-    obj['islink']   = os.path.islink(filepath)
-    obj['ismount']  = os.path.ismount(filepath)
+    def hash(self):
+        if not os.path.isfile(self.filepath):
+            return
 
-    if os.path.isfile(filepath):
-        obj['hash'] = file_hash(filepath)
+        with open(self.filepath, "rb") as f:
+            bytes = f.read() # read entire file as bytes
+            readable_hash = hashlib.sha256(bytes).hexdigest();
 
-    print(obj)
-    return obj
+            self.obj['hash'] = readable_hash
+            return readable_hash
+
+
+    def update(self):
+        self.obj['filepath'] = self.filepath
+        self.obj['statinfo'] = os.stat(self.filepath)
+
+        self.obj['isfile']   = os.path.isfile(self.filepath)
+        self.obj['isdir']    = os.path.isdir(self.filepath)
+        self.obj['islink']   = os.path.islink(self.filepath)
+        self.obj['ismount']  = os.path.ismount(self.filepath)
+
+
+    def print(self):
+        print(self.obj)
 
 
 ### MAIN
@@ -70,9 +81,12 @@ if __name__ == "__main__":
     print(args.path)
     for root, dirs, files in os.walk(args.path, topdown=False):
         for name in files:
-            obj = file_handling(os.path.join(root, name))
+            fo = FileObj(os.path.join(root, name))
+            mem.append(fo)
 
         for name in dirs:
-            obj = file_handling(os.path.join(root, name))
+            fo = FileObj(os.path.join(root, name))
+            mem.append(fo)
 
-
+    for m in mem:
+        m.print()
