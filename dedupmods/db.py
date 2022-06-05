@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sqlite3
+from dedupmods import dataobj
 
 
 class FileObjDB:
@@ -50,6 +51,8 @@ class FileObjDB:
 
 
     def fetch_collision_data(self):
+        fileobjs = []
+
         sql = '''SELECT hash
                    FROM collisions'''
 
@@ -57,11 +60,20 @@ class FileObjDB:
 
         rows = self.cur.fetchall()
         for row in rows:
-            self.query_fileobjs_by_hash(row[0])
+            r_objs = self.query_fileobjs_by_hash(row[0])
+            fileobjs += r_objs
+
+        return fileobjs
 
 
     def query_fileobjs_by_hash(self, hsh: str):
-        sql = '''SELECT hash, size, filepath
+        fileobjs = []
+
+        sql = '''SELECT
+                        filepath,
+                        id, ext,
+                        isdir, isfile, islink, ismount,
+                        size, hash
                    FROM fileobjs
                   WHERE hash = ?'''
 
@@ -71,8 +83,17 @@ class FileObjDB:
 
         rows = self.cur.fetchall()
         for row in rows:
-            # TODO
-            print(row)
+            obj = dataobj.DataObj(filepath=row[0],
+                                  id=row[1],
+                                  isdir=row[2],
+                                  isfile=row[3],
+                                  islink=row[4],
+                                  ismount=row[5],
+                                  size=row[6],
+                                  hash=row[7])
+            fileobjs.append(obj)
+
+        return fileobjs
 
 
     def store_file_obj(self, obj):

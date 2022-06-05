@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
+import pprint
+
 import os
 from dedupmods import args, dataobj, db
+
+pp = pprint.PrettyPrinter(width=20)
+#pp.install_extras()
 
 
 def proces_file(filepath) -> 'success':
@@ -49,10 +54,13 @@ def walk_files(argp, fod) -> bool:
                 continue
 
 
-def search_for_hash_collission(argp, fod) -> bool:
+def search_for_hash_collission(argp, fod) -> 'list of collision fileobj':
     fod.search_for_and_and_store_collisions()
-    fod.fetch_collision_data()
+    fileobj_collisions = fod.fetch_collision_data()
 
+#    pp.pprint(fileobj_collisions)
+#    pprint.pprint(fileobj_collisions)
+    return fileobj_collisions
 
 
 ### MAIN
@@ -67,4 +75,6 @@ if __name__ == '__main__':
     # Walk files and register files
     rc = walk_files(argp, fod)
 
+    # Search for collisions
     search_for_hash_collission(argp, fod)
+
