@@ -37,23 +37,27 @@ def calc_hash_file(path: str) -> str:
 @dataclass
 class DataObj:
     filepath: str
-    id: str = field(default_factory=generate_obj_id)
+
     basename: str = None
     dirname: str = None
     exists: int = None
     ext: str = None
+    hash: str = None
     isdir: int = None
     isfile: int = None
     islink: int = None
     ismount: int = None
     size: int = None
+    calc_hash_on_init: bool = False
+
+    id: str = field(default_factory=generate_obj_id)
     # statinfo:
 
     def __post_init__(self):
         self.basename   = os.path.basename(self.filepath)
         self.dirname    = os.path.dirname(self.filepath)
         self.exists     = os.path.exists(self.filepath)
-        self.ext        = os.path.splitext(self.basename)[1]
+        self.ext        = os.path.splitext(self.filepath)[1]
         self.isdir      = os.path.isdir(self.filepath)
         self.isfile     = os.path.isfile(self.filepath)
         self.islink     = os.path.islink(self.filepath)
@@ -62,4 +66,6 @@ class DataObj:
         self.statinfo   = os.stat(self.filepath)
 
         # Will take actual time and work to do.
-        self.hash       = calc_hash_file(self.filepath)
+        if self.calc_hash_on_init:
+            self.hash       = calc_hash_file(self.filepath)
+

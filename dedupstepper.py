@@ -17,16 +17,23 @@ def walk_files(argp, fod) -> bool:
 
             if not os.path.isfile(filepath):
                 print(f"Warning: file is not a regular file. Skipping. \"{filepath}\"")
+                continue
 
             if argp.debug:
                 print(f"Info: grab meta and calc hash \"{filepath}\"")
 
             # Read meta data and calc hash into obj
             obj = dataobj.DataObj(filepath)
+            obj.hash = dataobj.calc_hash_file(filepath)
+
+            if obj.hash is None:
+                print(f"Warning: could not calculate hash \"{filepath}\"")
+                continue
 
             if argp.debug:
                 print(f"Info: registering \"{filepath}\" with id \"{obj.id}\"")
 
+            # Store into database
             fod.store_file_obj(obj)
 
             if argp.debug:
