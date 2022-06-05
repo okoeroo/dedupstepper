@@ -14,13 +14,22 @@ def calc_hash_file(path: str) -> str:
     if os.path.exists(path) and os.path.isfile(path):
         h_s = hashlib.sha256()
 
-        with open(path, mode='rb') as f:
-            # SHA256 blocksize is 64
-            # Thus, 16 * 1024 * 64 = 1M
-            while chunk := f.read(16 * 1024 * h_s.block_size):
-                h_s.update(chunk)
+        try:
+            with open(path, mode='rb') as f:
+                # SHA256 blocksize is 64
+                # Thus, 16 * 1024 * 64 = 1M
+                while chunk := f.read(16 * 1024 * h_s.block_size):
+                    h_s.update(chunk)
 
-        return h_s.hexdigest()
+            return h_s.hexdigest()
+        except PermissionError as e:
+            print(f"Error: Permission error for path \"{path}\"}")
+            return None
+
+        except Exception as e:
+            print(f"Error: Generic/unknown error \"{str(e)}\" for path \"{path}\"}")
+            return None
+
     else:
         return None
 
