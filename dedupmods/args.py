@@ -24,6 +24,13 @@ def argparsing(exec_file):
     parser = argparse.ArgumentParser(exec_file)
 
     parser.add_argument('--debug',
+                    dest='debug',
+                    default=False,
+                    action="store_true",
+                    help="Print debug output")
+
+    parser.add_argument('--parallel',
+                    dest='parallel',
                     default=False,
                     action="store_true",
                     help="Print debug output")
