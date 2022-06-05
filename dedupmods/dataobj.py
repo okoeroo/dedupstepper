@@ -23,11 +23,11 @@ def calc_hash_file(path: str) -> str:
 
             return h_s.hexdigest()
         except PermissionError as e:
-            print(f"Error: Permission error for path \"{path}\"}")
+            print(f"Error: Permission error for path \"{path}\"")
             return None
 
         except Exception as e:
-            print(f"Error: Generic/unknown error \"{str(e)}\" for path \"{path}\"}")
+            print(f"Error: Generic/unknown error \"{str(e)}\" for path \"{path}\"")
             return None
 
     else:

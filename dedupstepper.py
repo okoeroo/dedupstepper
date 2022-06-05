@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from dedubmods import args, dataobj, db
+from dedupmods import args, dataobj, db
 
 
 def walk_files(argp, fod) -> bool:
