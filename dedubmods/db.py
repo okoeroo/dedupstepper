@@ -77,7 +77,6 @@ class FileObjDB:
             print(row)
 
 
-
     def store_file_obj(self, obj):
         if obj is None:
             raise Exception("Obj is None")
