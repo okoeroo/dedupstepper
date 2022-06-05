@@ -46,7 +46,6 @@ class FileObjDB:
 
         rows = self.cur.fetchall()
         for row in rows:
-            print(row[0])
             self.store_collision_by_hash(row[0])
 
 
@@ -58,7 +57,6 @@ class FileObjDB:
 
         rows = self.cur.fetchall()
         for row in rows:
-            print(row[0])
             self.query_fileobjs_by_hash(row[0])
 
 
@@ -73,6 +71,7 @@ class FileObjDB:
 
         rows = self.cur.fetchall()
         for row in rows:
+            # TODO
             print(row)
 
 
