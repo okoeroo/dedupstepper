@@ -9,7 +9,7 @@ from dedupmods import args, dataobj, db
 #pp = pprint.PrettyPrinter(width=20)
 
 
-def proces_file(filepath, fod, argp) -> 'success':
+def proces_file(filepath, fod, argp):
     # Avoid Symlinks
     if os.path.islink(filepath):
         print(f"Warning: symlink detected. Skipping. \"{filepath}\"")
@@ -63,7 +63,7 @@ def walk_files(argp, fod, pool):
     return processes
 
 
-def search_for_hash_collission(argp, fod) -> 'list of collision fileobj':
+def search_for_hash_collission(argp, fod):
     fod.search_for_and_and_store_collisions()
     fileobj_collisions = fod.fetch_collision_data()
 

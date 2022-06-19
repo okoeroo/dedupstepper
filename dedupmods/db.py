@@ -5,15 +5,29 @@ from dedupmods import dataobj
 
 
 class FileObjDB:
-    def __init__(self, db_file):
-        self.conn   = sqlite3.connect(db_file)
-        self.cur    = self.conn.cursor()
+    def __init__(self, db_path, initdb=True):
+        self.db_path        = db_path
+        self.initdb_on_init = initdb
+        self.is_initiated   = False
+
+        if self.initdb_on_init:
+            self.initdb()
+
+
+    def initdb(self):
+        self.conn   = sqlite3.connect(self.db_path)
+        # self.cur    = self.conn.cursor()
         self.create_tables()
+
+        self.is_initiated = True
 
 
     def create_tables(self):
+        # Get a cursor
+        cur = self.conn.cursor()
+
         # Not adding fields 'exists' and 'statinfo'
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS fileobjs
+        cur.execute('''CREATE TABLE IF NOT EXISTS fileobjs
                                     (   id TEXT PRIMARY KEY,
                                         filepath TEXT UNIQUE,
                                         ext TEXT,
@@ -25,40 +39,59 @@ class FileObjDB:
                                         hash TEXT
                                     )''')
 
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS collisions
+        cur.execute('''CREATE TABLE IF NOT EXISTS collisions
                                     (   hash TEXT PRIMARY KEY
                                     )''')
 
+
     def store_collision_by_hash(self, hsh: str) -> None:
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
         sql = '''INSERT INTO collisions(hash) VALUES (?)'''
 
         data = (hsh,)
-        self.cur.execute(sql, data)
+        cur.execute(sql, data)
         self.conn.commit()
 
 
     def search_for_and_and_store_collisions(self):
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
         sql = '''SELECT hash
                    FROM fileobjs
                GROUP BY hash
                  HAVING COUNT(*)>2'''
 
-        self.cur.execute(sql)
+        cur.execute(sql)
 
-        rows = self.cur.fetchall()
+        rows = cur.fetchall()
         for row in rows:
             self.store_collision_by_hash(row[0])
 
 
     def fetch_collision_data(self):
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
         fileobjs = []
 
         sql = '''SELECT hash
                    FROM collisions'''
 
-        self.cur.execute(sql)
+        cur.execute(sql)
 
-        rows = self.cur.fetchall()
+        rows = cur.fetchall()
         for row in rows:
             r_objs = self.query_fileobjs_by_hash(row[0])
             fileobjs += r_objs
@@ -67,6 +100,12 @@ class FileObjDB:
 
 
     def query_fileobjs_by_hash(self, hsh: str):
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
         fileobjs = []
 
         sql = '''SELECT
@@ -79,9 +118,9 @@ class FileObjDB:
 
         data = (hsh, )
 
-        self.cur.execute(sql, data)
+        cur.execute(sql, data)
 
-        rows = self.cur.fetchall()
+        rows = cur.fetchall()
         for row in rows:
             obj = dataobj.DataObj(filepath=row[0],
                                   id=row[1],
@@ -97,6 +136,12 @@ class FileObjDB:
 
 
     def store_file_obj(self, obj):
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
         if obj is None:
             raise Exception("Obj is None")
 
@@ -116,6 +161,6 @@ class FileObjDB:
                 obj.isdir,      obj.isfile, obj.islink, obj.ismount,
                 obj.size,       obj.hash)
 
-        self.cur.execute(sql, data)
+        cur.execute(sql, data)
         self.conn.commit()
 
