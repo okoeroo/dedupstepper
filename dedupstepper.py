@@ -2,14 +2,14 @@
 
 
 import os
-from multiprocessing import Process
+from multiprocessing import Process, Pool
 from dedupmods import args, dataobj, db
 
-import pprint
-pp = pprint.PrettyPrinter(width=20)
+#import pprint
+#pp = pprint.PrettyPrinter(width=20)
 
 
-def proces_file(filepath, fod) -> 'success':
+def proces_file(filepath, fod, argp) -> 'success':
     # Avoid Symlinks
     if os.path.islink(filepath):
         print(f"Warning: symlink detected. Skipping. \"{filepath}\"")
@@ -43,7 +43,7 @@ def proces_file(filepath, fod) -> 'success':
     return True
 
 
-def walk_files(argp, fod) -> bool:
+def walk_files(argp, fod, pool):
     processes = []
 
     for root, dirs, files in os.walk(argp.path, topdown=False):
@@ -54,11 +54,11 @@ def walk_files(argp, fod) -> bool:
             # Work with files, success is True, failure is False
             # Parallel or serial
             if argp.parallel:
-                proc = Process(target=proces_file, args=(filepath,fod,))
+                proc = Process(target=proces_file, args=(filepath,fod,argp,))
                 processes.append(proc)
                 proc.start()
             else:
-                proces_file(filepath, fod)
+                proces_file(filepath, fod, argp)
 
     return processes
 
@@ -68,8 +68,6 @@ def search_for_hash_collission(argp, fod) -> 'list of collision fileobj':
     fileobj_collisions = fod.fetch_collision_data()
 
     print(fileobj_collisions)
-#    pp.pprint(fileobj_collisions)
-#    pprint.pprint(fileobj_collisions)
     return fileobj_collisions
 
 
@@ -77,15 +75,22 @@ def search_for_hash_collission(argp, fod) -> 'list of collision fileobj':
 if __name__ == '__main__':
     # initialize arguments and verify arguments.
     # All data is verified to be safely useable
-    argp = args.argparsing(os.path.basename(__file__))
+    argp_main = args.argparsing(os.path.basename(__file__))
 
     # Start database
-    fod_main = db.FileObjDB(argp.db)
-    fod = fod_main
+    if argp_main.parallel:
+        fod_main = db.FileObjDB(argp_main.db, initdb=False)
+    else:
+        fod_main = db.FileObjDB(argp_main.db, initdb=True)
 
-    # Walk files and register files
-    rc = walk_files(argp, fod_main)
+    with Pool(processes=4) as pool:
+        # Walk files and register files
+        processes = walk_files(argp_main, fod_main, pool)
+
+    if argp_main.parallel:
+        for p in processes:
+            p.join()
 
     # Search for collisions
-    search_for_hash_collission(argp, fod_main)
+    search_for_hash_collission(argp_main, fod_main)
 
