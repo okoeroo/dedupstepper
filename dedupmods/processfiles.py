@@ -42,8 +42,6 @@ def proces_file(filepath, fod, argp):
     return True
 
 
-
-
 def search_for_hash_collission(argp, fod):
     fod.search_for_and_and_store_collisions()
     fileobj_collisions = fod.fetch_collision_data()

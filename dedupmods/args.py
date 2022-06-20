@@ -29,16 +29,11 @@ def argparsing(exec_file):
                     action="store_true",
                     help="Print debug output")
 
-    parser.add_argument('--parallel',
-                    dest='parallel',
-                    default=False,
-                    action="store_true",
-                    help="Print debug output")
-
     parser.add_argument("--db",
                         dest='db',
                         help="Path to the database file.",
-                        default=':memory:',
+                        default='file_objects.db',
+#                        default=':memory:',
                         type=str)
 
     parser.add_argument("--path",

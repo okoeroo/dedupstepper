@@ -19,11 +19,11 @@ if __name__ == '__main__':
     # Queue
     q = Queue(maxsize=1000)
 
+    # Initialize the database
+    fod_main = db.FileObjDB(argp_main.db, initdb=False)
+
     # Start the input gathering
     t = queueinput.bootup_walker_thread(argp_main, q)
-
-    # Initialize the database
-    fod_main = db.FileObjDB(argp_main.db, initdb=True)
 
     # Dequeue files to dispatch
     dequeueproces.dequeuefilesqueue(q, processfiles.proces_file, (fod_main, argp_main))

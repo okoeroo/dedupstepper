@@ -65,10 +65,13 @@ class FileObjDB:
         # Get a cursor
         cur = self.conn.cursor()
 
+        # Select hash, group by hash and where a collision is more then 1
+        # (like, twice or more)
+
         sql = '''SELECT hash
                    FROM fileobjs
                GROUP BY hash
-                 HAVING COUNT(*)>2'''
+                 HAVING COUNT(*)>1'''
 
         cur.execute(sql)
 
@@ -156,11 +159,15 @@ class FileObjDB:
                                 ?, ?
                             )'''
 
-        data = (obj.filepath,
-                obj.id,         obj.ext,
-                obj.isdir,      obj.isfile, obj.islink, obj.ismount,
-                obj.size,       obj.hash)
+        try:
+            data = (obj.filepath,
+                    obj.id,         obj.ext,
+                    obj.isdir,      obj.isfile, obj.islink, obj.ismount,
+                    obj.size,       obj.hash)
 
-        cur.execute(sql, data)
-        self.conn.commit()
+            cur.execute(sql, data)
+            self.conn.commit()
+
+        except Exception as e:
+            print(f"Error: store_file_obj(): {e}")
 

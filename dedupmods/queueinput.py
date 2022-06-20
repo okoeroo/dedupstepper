@@ -13,7 +13,9 @@ def walk_files(argp, q):
             filepath = os.path.join(root, name)
 
             # Queue Put a full path
-            print(f"Queueing: {filepath}")
+            if argp.debug:
+                print(f"Queueing: {filepath}")
+
             q.put(filepath)
 
     q.put(ENDMARKER)
@@ -22,6 +24,8 @@ def walk_files(argp, q):
 def bootup_walker_thread(argp, q):
     thread = Thread(target=walk_files, args=(argp, q,))
     thread.start()
-    print(f"Info: Thread started to walk files in {argp.path}")
+
+    if argp.debug:
+        print(f"Info: Thread started to walk files in {argp.path}")
 
     return thread
