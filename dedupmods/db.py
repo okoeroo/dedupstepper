@@ -123,7 +123,7 @@ class FileObjDB:
         rows = cur.fetchall()
         for row in rows:
             r_objs = self.query_fileobjs_by_hash(row[0])
-            fileobjs += r_objs
+            fileobjs.append(r_objs)
 
         return fileobjs
 
