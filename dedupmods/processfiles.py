@@ -51,7 +51,14 @@ def proces_file(filepath, fod, argp):
 
 
 def pretty_print_collisions(fileobj_collisions):
-    print(fileobj_collisions)
+#    print(fileobj_collisions)
+
+    for collision_group_count, collision_group in enumerate(fileobj_collisions):
+        print(f"--- Collision group {collision_group_count}")
+        for fileobj in collision_group:
+            print(f"    File: {fileobj.filepath}")
+            print(f"        Size: {fileobj.size}")
+            print(f"        Hash: {fileobj.hash}")
 
 
 def search_for_hash_collisions(argp, fod):

@@ -153,12 +153,13 @@ class FileObjDB:
         for row in rows:
             obj = dataobj.DataObj(filepath=row[0],
                                   id=row[1],
-                                  isdir=row[2],
-                                  isfile=row[3],
-                                  islink=row[4],
-                                  ismount=row[5],
-                                  size=row[6],
-                                  hash=row[7])
+                                  ext=row[2],
+                                  isdir=row[3],
+                                  isfile=row[4],
+                                  islink=row[5],
+                                  ismount=row[6],
+                                  size=row[7],
+                                  hash=row[8])
             fileobjs.append(obj)
 
         return fileobjs
