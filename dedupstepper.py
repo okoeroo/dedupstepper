@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import sys
-from threading import Thread
 from queue import Queue
-#import threading, queue
-from multiprocessing import Process, Pool
-from dedupmods import args, dataobj, db, queueinput, processfiles, dequeueproces
-
+from dedupmods import args, db, queueinput, processfiles, dequeueproces
 
 
 ### MAIN
@@ -17,7 +12,7 @@ if __name__ == '__main__':
     argp_main = args.argparsing(os.path.basename(__file__))
 
     # Queue
-    q = Queue(maxsize=1000)
+    q = Queue(maxsize=argp_main.queuesize)
 
     # Initialize the database
     fod_main = db.FileObjDB(argp_main.db, initdb=False)

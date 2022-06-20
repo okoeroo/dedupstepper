@@ -164,22 +164,19 @@ class FileObjDB:
         return fileobjs
 
 
-    def check_if_path_already_present(self, obj):
+    def check_if_path_already_present(self, filepath):
         if not self.is_initiated:
             self.initdb()
 
         # Get a cursor
         cur = self.conn.cursor()
 
-        if obj is None:
-            raise Exception("Obj is None")
-
         sql = '''SELECT id
                    FROM fileobjs
                   WHERE filepath = ?'''
 
         try:
-            data = (obj.filepath, )
+            data = (filepath, )
             cur.execute(sql, data)
 
             rows = cur.fetchall()
@@ -195,7 +192,7 @@ class FileObjDB:
             self.initdb()
 
         # Check if file path already traversed and stored
-        if self.check_if_path_already_present(obj):
+        if self.check_if_path_already_present(obj.filepath):
             return
 
 

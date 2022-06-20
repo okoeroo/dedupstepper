@@ -9,13 +9,21 @@ from dedupmods import args, dataobj, db, queueinput
 
 
 def proces_file(filepath, fod, argp):
+    # Check if already in the database, skip if found
+    if fod.check_if_path_already_present(filepath):
+        if argp.debug:
+            print(f"Skipping: filepath already in database. \"{filepath}\"")
+        return True
+
     # Avoid Symlinks
     if os.path.islink(filepath):
-        print(f"Warning: symlink detected. Skipping. \"{filepath}\"")
+        if argp.debug:
+            print(f"Warning: symlink detected. Skipping. \"{filepath}\"")
         return False
 
     if not os.path.isfile(filepath):
-        print(f"Warning: file is not a regular file. Skipping. \"{filepath}\"")
+        if argp.debug:
+            print(f"Warning: file is not a regular file. Skipping. \"{filepath}\"")
         return False
 
     if argp.debug:

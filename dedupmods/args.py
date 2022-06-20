@@ -48,6 +48,12 @@ def argparsing(exec_file):
                         default=None,
                         type=int)
 
+    parser.add_argument("--queuesize",
+                        dest='queuesize',
+                        help="Queue size for fetching paths. Default is 1000.",
+                        default=5000,
+                        type=int)
+
     args = parser.parse_args()
     if not check_correctness(parser, args):
         sys.exit(1)
