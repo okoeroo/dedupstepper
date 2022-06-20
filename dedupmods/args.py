@@ -38,13 +38,13 @@ def argparsing(exec_file):
     parser.add_argument("--db",
                         dest='db',
                         help="Path to the database file.",
-                        default='file_objects.db',
+                        default=':memory:',
                         type=str)
 
     parser.add_argument("--path",
                         dest='path',
                         help="Path to traverse.",
-                        default=None,
+                        default=".",
                         type=str)
 
     parser.add_argument("--procnum",

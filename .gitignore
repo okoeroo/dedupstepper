@@ -1,3 +1,4 @@
 file_objects.db
 backup
 __pycache__
+.DS_Store
