@@ -50,10 +50,17 @@ def proces_file(filepath, fod, argp):
     return True
 
 
-def search_for_hash_collission(argp, fod):
+def pretty_print_collisions(fileobj_collisions):
+    print(fileobj_collisions)
+
+
+def search_for_hash_collisions(argp, fod):
     fod.search_for_and_and_store_collisions()
     fileobj_collisions = fod.fetch_collision_data()
 
-    print(fileobj_collisions)
+    # Print collisions
+    if argp.print_collisions:
+        pretty_print_collisions(fileobj_collisions)
+
     return fileobj_collisions
 

@@ -21,8 +21,10 @@ if __name__ == '__main__':
     t = queueinput.bootup_walker_thread(argp_main, q)
 
     # Dequeue files to dispatch
-    dequeueproces.dequeuefilesqueue(q, processfiles.proces_file, (fod_main, argp_main))
+    dequeueproces.dequeuefilesqueue(q,
+                                    processfiles.proces_file,
+                                    (fod_main, argp_main))
 
     # Search for collisions
-    processfiles.search_for_hash_collission(argp_main, fod_main)
+    processfiles.search_for_hash_collisions(argp_main, fod_main)
 

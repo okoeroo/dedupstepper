@@ -54,6 +54,14 @@ def argparsing(exec_file):
                         default=5000,
                         type=int)
 
+    parser.add_argument("--print-collisions",
+                        dest='print_collisions',
+                        action="store_true",
+                        help="Enable printing collisions.",
+                        default=False)
+
+
+
     args = parser.parse_args()
     if not check_correctness(parser, args):
         sys.exit(1)
