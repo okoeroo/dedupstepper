@@ -44,9 +44,35 @@ class FileObjDB:
                                     )''')
 
 
+    def check_if_hash_already_present(self, hsh):
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
+        sql = '''SELECT hash
+                   FROM collisions
+                  WHERE hash = ?'''
+
+        try:
+            data = (hsh, )
+            cur.execute(sql, data)
+
+            rows = cur.fetchall()
+            return len(rows) > 0
+
+        except Exception as e:
+            print(f"Error: check_if_hash_already_present(): {e}")
+            return False
+
+
     def store_collision_by_hash(self, hsh: str) -> None:
         if not self.is_initiated:
             self.initdb()
+
+        if self.check_if_hash_already_present(hsh):
+            return
 
         # Get a cursor
         cur = self.conn.cursor()
@@ -138,9 +164,40 @@ class FileObjDB:
         return fileobjs
 
 
+    def check_if_path_already_present(self, obj):
+        if not self.is_initiated:
+            self.initdb()
+
+        # Get a cursor
+        cur = self.conn.cursor()
+
+        if obj is None:
+            raise Exception("Obj is None")
+
+        sql = '''SELECT id
+                   FROM fileobjs
+                  WHERE filepath = ?'''
+
+        try:
+            data = (obj.filepath, )
+            cur.execute(sql, data)
+
+            rows = cur.fetchall()
+            return len(rows) > 0
+
+        except Exception as e:
+            print(f"Error: check_if_path_already_present(): {e}")
+            return False
+
+
     def store_file_obj(self, obj):
         if not self.is_initiated:
             self.initdb()
+
+        # Check if file path already traversed and stored
+        if self.check_if_path_already_present(obj):
+            return
+
 
         # Get a cursor
         cur = self.conn.cursor()
