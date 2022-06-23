@@ -26,11 +26,15 @@ def proces_file(filepath, fod, argp):
             print(f"Warning: file is not a regular file. Skipping. \"{filepath}\"")
         return False
 
-    if argp.debug:
-        print(f"Info: grab meta and calc hash \"{filepath}\"")
 
-    # Read meta data and calc hash into obj
+    # Read meta data into obj
+    if argp.debug:
+        print(f"Info: grab meta \"{filepath}\"")
     obj = dataobj.DataObj(filepath)
+
+    # Read calc hash into obj
+    if argp.debug:
+        print(f"Info: calc hash \"{filepath}\"")
     obj.hash = dataobj.calc_hash_file(filepath)
 
     if obj.hash is None:
@@ -56,9 +60,9 @@ def pretty_print_collisions(fileobj_collisions):
     for collision_group_count, collision_group in enumerate(fileobj_collisions):
         print(f"--- Collision group {collision_group_count}")
         for fileobj in collision_group:
-            print(f"    File: {fileobj.filepath}")
-            print(f"        Size: {fileobj.size}")
-            print(f"        Hash: {fileobj.hash}")
+            print(f"  - File: {fileobj.filepath}")
+            print(f"    Size: {fileobj.size}")
+            print(f"    Hash: {fileobj.hash}")
 
 
 def search_for_hash_collisions(argp, fod):
